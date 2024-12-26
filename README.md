@@ -1,15 +1,56 @@
 # Endless Pots
-Wait a minute...! There are endlessly rotating pots? But how does that work and why did I and the internet not know about them?
+
+**The secret 360º endless-potentiometers that  make rotary encoders obsolete **
+
+*Wait a minute...! There are endlessly rotating pots? But how does that work and why did I and the internet not know about them?*
 
 We recently stumbled across the existence of endless pots, analog rotary potentiometers that can be turned not just once but an infinite number of times. These can be used to read out the absolute position (and thus also relative angle changes over time) with high accuracy (analog read out).
 They exist - and no, we don't mean rotary encoders, which usually have a poor operating feel and can only measure rotation digitally and in discrete steps. And when we realized that the internet seems to know next to nothing about them, we decided to share our researched knowledge so that everyone can use these great components.
 
 # The Story
-Please check out this post about background infos on this special pot:
-https://connorshafran.com/endless-potentiometers
 
-# The Code
-This is a basic Arduino (C++) code, using an Arduino library reading the analog values, smoothing them (ResponsiveAnalogRead), returning the absolute position and sending it (exemplary) as MIDI to a computer.
+*This article will assume you understand the basics of using* [*normal potentiometers*](https://en.wikipedia.org/wiki/Potentiometer) *with a single wiper, and that you have experience programming Arduinos.*
 
-TODO
+### Prelude by Connor
 
+**I recently embarked on an Arduino project** that required rotary encoders – or so I thought. And I wasn’t so happy about it, because I *really* dislike rotary encoders. The affordable ones have click-steps and are usually limited to 20-30 steps – unless you want to dish out some serious cash – and even then, they’re bulky, harder to program, and nearly impossible to multiplex. 
+
+While trying to find non-shitty encoders, a thought popped into my mind… “Didn’t I used to have a MIDI controller with like, *16 smooth encoders?!”* 
+
+![akai_apc40](img/akai_apc40.png)
+
+Ah yes, the **APC40 mk1**! Sure enough, it has 16 damn encoders with LED rings! And even with an 8x5 clip launcher, tons of buttons, 9 faders and a cross-fader, it was still relatively affordable. So, where can I get these magically cheap, perfectly smooth encoders?!
+
+This question sent me down one of the deepest internet rabbit-holes I’ve ever been on. And odds are, if you’re reading this now, you’re in the same position. 
+
+**Well, good news for you: We might have the answers you’re looking for…** 
+
+### The Alpha 360º Endless Potentiometer
+
+**The secret is the Alpha 360º Endless Potentiometer with two wipers.** 
+
+
+
+![RV112FF-40](img/RV112FF-40.jpg)
+
+Prices can vary a lot (from 1$ in special offers to ) and the pots are offered under various names . We already bought [these](https://de.aliexpress.com/item/1005007005315736.html?spm=a2g0o.order_list.order_list_main.5.4b065c5fZVxfd8&gatewayAdapt=glo2deu) and [these](https://de.aliexpress.com/item/1005007005688361.html) and can confirm they work properly and have good turning resistance. 
+
+They almost certainly are the [RV112FF-40B1 model](https://www.taiwanalpha.com/downloads?target=products&id=79), but we can't say for sure as they are sold under different names. Very often they are sold with terms like "Boss GT10", "MPK, MPD, APC rotary pot", etc. to show that they can be used as replacement parts for this hardware.
+
+We also bought [some of this other model](https://www.taiwanalpha.com/downloads?target=products&id=93) from Mouser, which are the same, but also include a push-switch, so you can click the knob in like a button. However, the turning-resistance on these is very weak, which makes them feel much cheaper than the non-switch model. As it is pretty cool to have the push function, we are working on solutions to artificially add torque by e.g. sticking foam to the pot caps…
+
+![Screenshot+2024-12-03+at+13.44.52](img/datasheet-dimensions.png)
+
+![Screenshot+2024-12-03+at+13.45.08](img/schematic-symbol.png)
+
+Pins ① and ③ are ground and voltage, and pins ② and 2 are analog data. You’ll have to experiment until you get them in the correct direction.
+
+### Signal Path of the Wipers
+
+Unlike normal potentiometers, these 360º pots have *4 pins* for the wipers. Two of them are ground and voltage like a normal pot, but instead of having just one pin for the analog data, there are *two*. This is because there are two wipers (variable resistors), which are offset from each other. Using the analog data you get from both pins, you can find the absolute position of the knob in radians. 
+
+![signalpath](img/signalpath.jpg)
+
+However, for an amateur-programmer like me, this is easier said than done. We provide a basic Arduino script that can read any number of these pots (two pots in the example) you hook up to your Arduino and report their absolute values as MIDI or Serial (provided you have enough analog pins). The key is the [2-argument arctangent function](https://en.wikipedia.org/wiki/Atan2), aka **atan2**. Using this with the values from both wipers gives you the position of the knob from -pi to +pi. 
+
+The second example we provide is a generic PCB with 8 of these pots and ADCs. They read the wipers and pass the values on to an ESP32, where a similar calculation is done to get the angle change since the last cycle. This can then be send via Serial (or other protocols) to a computer to only trigger relative changes on a parameter...
