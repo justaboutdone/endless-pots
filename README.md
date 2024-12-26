@@ -13,5 +13,3 @@ This is a basic Arduino (C++) code, using an Arduino library reading the analog 
 
 TODO
 
-# The PCB
-TODO
