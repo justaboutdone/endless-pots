@@ -1,19 +1,18 @@
 /* 
 
 Pins:
-14 - pot1 wiper 1
-15 - pot2 wiper 1
-16 - pot1 wiper 2
-17 - pot2 wiper 2
+A0  -  pot1 wiper 1
+A1  -  pot1 wiper 2
+A2  -  pot2 wiper 1
+A3  -  pot2 wiper 2
 
 */
 
-// Turns on or off all use of MIDIUSB
-#define ENABLE_MIDI   true
+#define ENABLE_MIDI  true  // Turns on or off all use of MIDIUSB
 
-#define DEBUG    0    // Set to 1 to enable Serial.print messages
+#define DEBUG  0  // Set to 1 to enable Serial.print messages
 
-#define MIDI_CHANNEL  0 // "Channel 1"
+#define MIDI_CHANNEL  0  // "Channel 1" 
 
 #if ENABLE_MIDI
   #include "MIDIUSB.h"
@@ -22,19 +21,20 @@ Pins:
 #include <ResponsiveAnalogRead.h>
 
 
-///// Potentiometer definitions //////
+///// Definitions //////
 
-const int NPots = 2; //*** total number of pots
-const int wiper1Pin[NPots] = {14, 15};
-const int wiper2Pin[NPots] = {16, 17};
+const int NPots = 2;                    // Total number of potentiometers
+const int wiper1Pin[NPots] = {A0, A2};  // Wiper 1 pins, separated by commas
+const int wiper2Pin[NPots] = {A1, A3};  // Wiper 2 pins, separated by commas
+
+byte potCC = 0;                         // MIDI CC for first pot. Subsequent pots will increase from this point (pot1 = CC 0 , pot2 = CC 1, etc.)
+
 int wiper1Reading[NPots] = {0};
 int wiper2Reading[NPots] = {0};
 
 float snapMultiplier = 0.01;
 ResponsiveAnalogRead responsiveWiper1[NPots] = {};
 ResponsiveAnalogRead responsiveWiper2[NPots] = {};
-
-byte potCC = 0; // MIDI CC for first pot. Subsequent pots will increase from this point (pot1 = CC 0 , pot2 = CC 1, etc.)
 
 double prevAngle[NPots] = {};
 double angle[NPots] = {};
@@ -53,11 +53,11 @@ uint8_t incomingControl = 0;
 uint8_t incomingControlValue = 0;
 
 
-
 void setup() {
-  // Initialize serial communication
+  
+// Initialize serial communication
 #if DEBUG
-  Serial.begin(115200); //115200 recommended
+  Serial.begin(115200); 
 #endif
 
   // Initialize responsive analog reads
@@ -78,7 +78,7 @@ void setup() {
 
 void loop() {
   potentiometers();
-  delay(10); // Adjust this to change potentiometer sensitivity
+  delay(10); // Adjust this to change potentiometer sensitivity. 10ms seems to work well.
 }
 
 
@@ -119,9 +119,10 @@ void potentiometers() {
   }
 
   for (int i = 0; i < NPots; i++) {
+    // Smooth analogRead values
     wiper1Reading[i] = analogRead(wiper1Pin[i]);
     wiper2Reading[i] = analogRead(wiper2Pin[i]);
-    responsiveWiper1[i].update(wiper1Reading[i]); // Smooth the value
+    responsiveWiper1[i].update(wiper1Reading[i]); 
     responsiveWiper2[i].update(wiper2Reading[i]);
     wiper1[i] = responsiveWiper1[i].getValue();
     wiper2[i] = responsiveWiper2[i].getValue();  
@@ -129,7 +130,7 @@ void potentiometers() {
     // Compute current angle and dial position
     fx[i] = ((double)wiper1[i] / 511.5) - 1;   // range -1 to +1
     fy[i] = ((double)wiper2[i] / 511.5) - 1;  
-    angle[i] = atan2(fy[i], fx[i]); // range -pi to +pi
+    angle[i] = atan2(fy[i], fx[i]);            // range -pi to +pi
     dialPosition[i] = map(angle[i], -PI, PI, 0, 128);
 
     // Skip uninitialized knobs
@@ -175,6 +176,16 @@ void potentiometers() {
 
 /////// MIDI Functions //////
 
+void controlChange(uint8_t channel, uint8_t control, uint8_t value) {
+  #if ENABLE_MIDI
+    midiEventPacket_t event = {0x0B, (uint8_t)(0xB0 | channel), control, value};
+    MidiUSB.sendMIDI(event);
+    MidiUSB.flush();
+  #endif
+}
+
+// noteOn and noteOff are not necessary for this code, but I'll leave them in for anyone who might need them: 
+
 void noteOn(uint8_t channel, uint8_t pitch, uint8_t velocity) {
   #if ENABLE_MIDI
     midiEventPacket_t noteOn = {0x09, (uint8_t)(0x90 | channel), pitch, velocity};
@@ -191,10 +202,3 @@ void noteOff(uint8_t channel, uint8_t pitch) {
   #endif
 }
 
-void controlChange(uint8_t channel, uint8_t control, uint8_t value) {
-  #if ENABLE_MIDI
-    midiEventPacket_t event = {0x0B, (uint8_t)(0xB0 | channel), control, value};
-    MidiUSB.sendMIDI(event);
-    MidiUSB.flush();
-  #endif
-}
