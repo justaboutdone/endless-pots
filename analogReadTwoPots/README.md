@@ -1,8 +1,8 @@
-This Arduino Code uses 4 analog input pins of a Aduino board (e.g. Arduino Uno) to read out the two wipers of **two endles pots** and sends the position to ableton using MIDI and a receiving Max for Live patch. Key (as previously described) is the [2-argument arctangent function](https://en.wikipedia.org/wiki/Atan2), aka **atan2** to get the absolute position by using the values of two wipers.
+This Arduino Code uses 4 analog input pins of a Aduino board (e.g. Arduino Uno) to read out the two wipers of **two endles pots** and sends the position to Ableton using MIDI and a receiving Max for Live patch. Key (as previously described) is the [2-argument arctangent function](https://en.wikipedia.org/wiki/Atan2), aka **atan2** to get the absolute position by using the values of two wipers.
 
 ## The Arduino Code
 
-This Arduino code simply returns the absolute position of the potentiometer as a MIDI CC value (or Serial), scaled from 0-127. Additionally, if you send a value with the same MIDI CC number back to the Arduino controller, it will update the zero-point with that new value. 
+This Arduino code simply returns the absolute position of the potentiometer as a MIDI CC value (or Serial via DEBUG mode), scaled from 0-127. Additionally, if you send a value with the same MIDI CC number back to the Arduino controller, it will update the zero-point with that new value. 
 
 ### Example
 
@@ -12,7 +12,7 @@ This Arduino code simply returns the absolute position of the potentiometer as a
 
 ## Max for Live Device
 
-I’ve also included a simple Max for Live device (receive_single.amxd) to serve as a demonstration. It will work for CC values 0-7. 
+I’ve included a simple Max for Live device (receive_single.amxd) to serve as a demonstration. It will work for CC values 0-7. 
 
 ![Screenshot+2024-12-03+at+14.03.16](img/Screenshot+2024-12-03+at+14.03.16.jpg)*
 
@@ -24,11 +24,10 @@ To test it, simply drag the device onto an empty MIDI Track in Ableton with no o
 
 ## Hints for the Arduino Code
 
-- On **line 27**, you can set the total number of potentiometers. It’s set to 2 by default.
-- On **lines 28 and 29**, you’ll set the pins you use for wipers 1 and 2. Since there are 2 pots, there are two values for each, but if you change the number of pots, you will need to add or remove the number of values accordingly. 
-  **Line 28** contains *all of the wiper 1’s* from all of your pots, in ascending order. 
-  **Line 29** contains *all of the wiper 2’s* in the same order. 
-  So, in my code, wipers 1 and 2 of the first pot are on pins 14 and 16, respectively. For the second pot, it’s pins 15 and 17. Hope that makes sense.
-- On **line 37**, you can change the starting CC number. Your pots will step up incrementally from this number. The default is 0. 
-- On **line 132**, you’ll find the magical atan2 function. 
+- On **line 38**, you can set the total number of potentiometers. It’s set to 2 by default.
+- On **lines 39 and 40**, you’ll set the pins you use for wipers 1 and 2. Since there are 2 pots, there are two values for each. If you change the number of pots, you will need to add or remove the number of values accordingly. 
+  **Line 39** contains *all of the wiper 1’s* from all of your pots, in ascending order. 
+  **Line 40** contains *all of the wiper 2’s* in the same order. 
+- On **line 42**, you can change the starting CC number. Your pots will step up incrementally from this number. The default is 0. 
+- On **line 145**, you’ll find the magical atan2 function. 
 - This code uses the libraries **MIDIUSB.h** and **ResponsiveAnalogRead.h**. You’ll need to install those.
