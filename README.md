@@ -1,6 +1,6 @@
 # Endless Pots
 
-**The secret 360º endless-potentiometers that make rotary encoders obsolete **
+**The secret 360º endless-potentiometers that  make rotary encoders obsolete**
 
 *Wait a minute...! There are endlessly rotating pots? But how does that work and why didn't I (nor the internet) know about them?*
 
