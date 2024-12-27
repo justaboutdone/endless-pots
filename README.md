@@ -56,3 +56,15 @@ Pins ① and ③ are ground and voltage, and pins ② and 2 are analog data. You
 Getting the aboslute position from the two analog read pins isn't as easy as it may seem. We provide a basic Arduino script that can read any number of these pots (two pots in the example) and report their absolute values as MIDI or Serial. The key is the [2-argument arctangent function](https://en.wikipedia.org/wiki/Atan2), aka **atan2**. Using this with the values from both wipers gives you the position of the knob from -pi to +pi. 
 
 The second example we provide is a generic PCB with 8 of these pots connected to ADCs. They read the wipers and pass the values on to an ESP32, where a similar calculation is done to get the angle change since the last cycle. This can then be sent via Serial (or other protocols) to a computer to only trigger relative changes on a parameter...
+
+## Links and Sources
+
+When we started researching this topic, we couldn't really find a source. This was partly because we used the wrong terms. We went back and collected all the forums and discussions on the topic when we were preparing this repo. Here are the most important ones (unorganized, maybe we'll do that later). Some of them already contain the right clues if you look closely ;-) Many thanks for the work of others so far! 
+
+- [components - Is there something such as an infinite potentiometer? - Electrical Engineering Stack Exchange](https://electronics.stackexchange.com/questions/374040/is-there-something-such-as-an-infinite-potentiometer) 
+- [Driver/algorithm for 360 deg endless potentiometer | Hackaday.io](https://hackaday.io/project/171841-driveralgorithm-for-360-deg-endless-potentiometer) 
+- [Convert dual pot "360 endless pot" to angle position](https://gist.github.com/todbot/cd964282dd3c2599a629f5ecf5d1ca98) 
+- [Endless potentiometer decoding - Software Development - Daisy Forums](https://forum.electro-smith.com/t/endless-potentiometer-decoding/3972) 
+- [GeroTakke.de - ottopot](https://gerotakke.de/ottopot/)
+- [help endless potentiometers](https://www.xsimulator.net/community/threads/help-endless-potentiometers.12218/)  
+- [Read Endless Potentiometer | Teensy Forum](https://forum.pjrc.com/index.php?threads/read-endless-potentiometer.59830/) 
