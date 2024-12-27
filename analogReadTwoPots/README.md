@@ -12,7 +12,7 @@ This Arduino code simply returns the absolute position of the potentiometer as a
 
 ## Max for Live Device
 
-I’ve included a simple Max for Live device (pot_partner.amxd) to serve as a demonstration. It will work for CC values 0-7. 
+I’ve included a simple Max for Live device (potPartner.amxd) to serve as a demonstration. It will work for CC values 0-7. 
 
 ![Screenshot+2024-12-03+at+14.03.16](img/Screenshot+2024-12-03+at+14.03.16.jpg)*
 
