@@ -68,7 +68,6 @@ void initializeResponsiveAnalogReads() {
     responsiveWiper2[i].setAnalogResolution(4095);
     prevDialPosition[i] = -1;
     prevInternalDialValue[i] = -1;
-    internalDialValue[i] = -1;
   }
 }
 
